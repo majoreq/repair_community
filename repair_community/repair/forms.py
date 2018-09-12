@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User, Group
+from .models import Ticket
 
 GROUP_CHOICES = (
     ('technican', 'Technican'),
@@ -19,3 +20,8 @@ class RegisterForm(forms.Form):
 class LoginForm(forms.Form):
     login = forms.CharField(max_length=128, label='login')
     password = forms.CharField(max_length=128, label='password', widget=forms.PasswordInput)
+
+
+class TicketForm(forms.Form):
+    device = forms.CharField(max_length=128)
+    description = forms.CharField(widget=forms.Textarea)

@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect
 from django.views import View
 from django.http import HttpResponse
-from .forms import RegisterForm, LoginForm
+from .forms import RegisterForm, LoginForm, TicketForm
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import authenticate, login, logout
-# Create your views here.
+from .models import Ticket
 
 class Index(View):
     def get(self, request):
@@ -40,7 +40,9 @@ class Register(View):
 class Login(View):
     def get(self, request):
         form = LoginForm()
-        return render(request, 'login.html', {'form':form})
+        return render(request, 'login.html', {
+            'form':form
+        })
 
     def post(self, request):
         form = LoginForm(request.POST)
@@ -51,7 +53,9 @@ class Login(View):
                 return redirect('index')
             else:
                 error = "Wrong username or password"
-                return render(request, 'login.html', {'form': form, 'error':error})
+                return render(request, 'login.html', {
+                    'form': form, 'error':error
+                })
         return HttpResponse("Not working")
 
 
@@ -59,3 +63,24 @@ class Login(View):
 def logoff(request):
     logout(request)
     return redirect('index')
+
+
+class NewTicket(View):
+    def get(self, request):
+        form = TicketForm()
+        return render(request, 'new_ticket.html',{
+            'form':form
+        })
+
+    def post(self, request):
+        form = TicketForm(request.POST)
+        user = User.objects.get(id = request.user.id)
+        if form.is_valid():
+            Ticket.objects.create(
+            device = form.cleaned_data['device'],
+            description = form.cleaned_data['description'],
+            author = user
+            )
+            return HttpResponse("ticket created")
+        return HttpResponse("form is not valid")
+
