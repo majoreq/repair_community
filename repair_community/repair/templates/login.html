@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block extra_header %}
+<title>Login</title>
+{% endblock %}
+{% block content %}
+
+<form method="POST">
+    {% csrf_token %}
+    {{form.as_ul}}
+    <input type="submit" value="login">
+</form>
+{{ succes }}
+{{ error }}
+{% endblock %}
