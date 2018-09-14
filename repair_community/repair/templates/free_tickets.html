@@ -18,7 +18,7 @@
 <table border="1" width="400">
 {% for ticket in tickets %}
 <tr>
-    <td>{{ ticket.device }}</td>
+    <td><a href="{% url 'ticket-status' ticket.id %}">{{ ticket.device }}</a></td>
     <td>{{ ticket.author }}</td>
 </tr>
 <tr>

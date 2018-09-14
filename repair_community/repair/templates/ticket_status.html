@@ -18,7 +18,7 @@
         <table border="1">
             <tr>
                 <td>{{offer.creation_date}}</td>
-                <td>{{offer.author}}</td>
+                <td><a href="{% url 'send-dm' offer.author.id %}">{{offer.author}}</a> </td>
             </tr>
             <tr>
                 <td colspan="2">{{offer.message}}</td>

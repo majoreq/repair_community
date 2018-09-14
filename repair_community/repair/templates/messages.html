@@ -4,7 +4,7 @@
 <title>Messages</title>
 {% endblock %}
 {% block content %}
-<a href="{% url 'send-message' user.id %}">WYŚLIJ WIADOMOŚĆ</a>
+<a href="{% url 'send-message' %}">WYŚLIJ WIADOMOŚĆ</a>
 <table border="1" width="500">
     <tr><td colspan="2"><b>Wiadomości</b></td></tr>
    {% for message in messages %}

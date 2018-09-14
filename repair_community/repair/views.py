@@ -150,17 +150,17 @@ class MyMessages(View):
 
 
 class SendMessage(View):
-    def get(self, request, user_id):
+    def get(self, request):
         form = NewMessageForm()
         return render(request, 'newMessage.html', {'form':form})
 
-    def post(self, request, user_id):
+    def post(self, request):
         form = NewMessageForm(request.POST)
         if form.is_valid():
             Message.objects.create(
                 content = form.cleaned_data['content'],
                 to_who = form.cleaned_data['to_who'],
-                from_who = User.objects.get(id = user_id)
+                from_who = User.objects.get(id = request.user.id)
             )
             messages = Message.objects.all()
             return render(request, 'messages.html', {'messages': messages})
@@ -173,3 +173,9 @@ class ReadMessage(View):
         message.readed = True
         message.save()
         return render(request, 'readMessage.html', {'message':message})
+
+
+class SendDM(View):
+    def get(self, request, user_id):
+        form = NewMessageForm(initial={'to_who':user_id})
+        return render(request, 'newMessage.html', {'form': form})

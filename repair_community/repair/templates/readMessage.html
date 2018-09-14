@@ -5,9 +5,10 @@
 {% endblock %}
 {% block content %}
 <table border="1" width="500">
-    <tr><td><b>Wiadomości</b></td></tr>
-    <tr><td>Autor: {{message.from_who}}</td></tr>
-    <tr><td>Treść: {{message.content|slice:":30"}}</td></tr>
+    <tr><td><b>Messages</b></td></tr>
+    <tr><td>Author: {{message.from_who}}</td></tr>
+    <tr><td>Message: {{message.content|slice:":30"}}</td></tr>
+    <tr><td><a href="{% url 'send-dm' message.from_who.id %}">Answer</a> </td></tr>
 
 
 </table>
