@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from repair.views import Index, Register, Login, logoff, NewTicket
+from repair.views import Index, Register, Login, logoff, NewTicket, FreeTickets, MakeOffer, TicketStatus, AssignCase
 
 
 urlpatterns = [
@@ -25,4 +25,8 @@ urlpatterns = [
     path('login', Login.as_view(), name='login'),
     path('logout', logoff, name='logout'),
     path('new_ticket', NewTicket.as_view(), name='new-ticket'),
+    path('free_tickets', FreeTickets.as_view(), name='free-tickets'),
+    path('free_tickets/<ticket_id>', MakeOffer.as_view(), name='make-offer'),
+    path('ticket/<ticket_id>', TicketStatus.as_view(), name='ticket-status'),
+    path('ticket/<ticket_id>/<offer_id>', AssignCase.as_view(), name='assign'),
 ]

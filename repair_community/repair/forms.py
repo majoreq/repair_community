@@ -25,3 +25,8 @@ class LoginForm(forms.Form):
 class TicketForm(forms.Form):
     device = forms.CharField(max_length=128)
     description = forms.CharField(widget=forms.Textarea)
+
+
+class OfferForm(forms.Form):
+    message = forms.CharField(widget=forms.Textarea)
+    price = forms.FloatField()

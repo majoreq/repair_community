@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block extra_header %}
+<title>Ticket status</title>
+{% endblock %}
+{% block content %}
+
+<h1>Ticket status</h1>
+<p>{{ticket.creation_date}} {{ticket.author}}</p>
+<p>Device: {{ticket.device}}</p>
+<p>Description: {{ticket.description}}</p>
+<p>Ticket status: {{ticket.get_status_display}}</p>
+
+<table border="1">
+    <tr>
+        <td>{{offer.creation_date}}</td>
+        <td>{{offer.author}}</td>
+    </tr>
+    <tr>
+        <td colspan="2">{{offer.message}}</td>
+    </tr>
+    <tr>
+        <td>price: {{offer.price}}</td>
+        <td><a href="{% url 'assign' ticket.id offer.id %}">accept</a> </td>
+    </tr>
+</table>
+
+
+
+{% endblock %}

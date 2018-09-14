@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block extra_header %}
+<title>Free tickets</title>
+{% endblock %}
+{% block content %}
+
+<table border="1" width="400">
+<tr>
+    <th>DEVICE</th>
+    <th>AUTHOR</th>
+</tr>
+<tr>
+    <th>DESCRIPTION</th>
+    <th>ACTION</th>
+</tr>
+</table><br>
+<table border="1" width="400">
+{% for ticket in tickets %}
+<tr>
+    <td>{{ ticket.device }}</td>
+    <td>{{ ticket.author }}</td>
+</tr>
+<tr>
+    <td>{{ ticket.description }}</td>
+    <td><a href="{% url 'make-offer' ticket.id %}">Offer</a> </td>
+</tr>
+
+
+{% endfor %}
+</table>
+{% endblock %}
