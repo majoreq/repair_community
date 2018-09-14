@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block extra_header %}
+<title>Messages</title>
+{% endblock %}
+{% block content %}
+<a href="{% url 'send-message' user.id %}">WYŚLIJ WIADOMOŚĆ</a>
+<table border="1" width="500">
+    <tr><td colspan="2"><b>Wiadomości</b></td></tr>
+   {% for message in messages %}
+    <tr><td colspan="2">Autor: {{message.from_who}}</td></tr>
+    <tr>
+        {% if message.readed == False %}
+            <td><b>Treść: {{message.content|slice:":30"}}</b></td>
+        {% else %}
+            <td>Treść: {{message.content|slice:":30"}}</td>
+        {% endif %}
+        <td><a href="{% url 'read-message' message.id %}">READ</a></td>
+    </tr>
+
+    {% endfor %}
+
+</table>
+
+<h2>{{error}}</h2>
+{% endblock %}

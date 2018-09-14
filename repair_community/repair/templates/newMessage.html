@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block extra_header %}
+<title>New message</title>
+{% endblock %}
+{% block content %}
+<form method="POST">
+    {% csrf_token %}
+    {{form}}
+    <input type="submit" value="send">
+</form>
+<h2>{{error}}</h2>
+{% endblock %}

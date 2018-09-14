@@ -30,3 +30,11 @@ class Offer(models.Model):
     price = models.FloatField(verbose_name="price")
     ticket = models.ForeignKey(Ticket, verbose_name="ticket", on_delete=models.SET_NULL, null=True)
     message = models.TextField(verbose_name="message")
+
+
+class Message(models.Model):
+    creation_date = models.DateTimeField(auto_now_add=True)
+    from_who = models.ForeignKey(User, on_delete=models.CASCADE, related_name='from_who')
+    to_who = models.ForeignKey(User, on_delete=models.CASCADE, related_name='to_who')
+    content = models.CharField(max_length=256)
+    readed = models.BooleanField(default=False)

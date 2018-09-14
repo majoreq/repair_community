@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block extra_header %}
+<title>Messages</title>
+{% endblock %}
+{% block content %}
+<table border="1" width="500">
+    <tr><td><b>Wiadomości</b></td></tr>
+    <tr><td>Autor: {{message.from_who}}</td></tr>
+    <tr><td>Treść: {{message.content|slice:":30"}}</td></tr>
+
+
+</table>
+
+<h2>{{error}}</h2>
+{% endblock %}

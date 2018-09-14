@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User, Group
-from .models import Ticket
+from .models import Ticket, Message
 
 GROUP_CHOICES = (
     ('technican', 'Technican'),
@@ -30,3 +30,9 @@ class TicketForm(forms.Form):
 class OfferForm(forms.Form):
     message = forms.CharField(widget=forms.Textarea)
     price = forms.FloatField()
+
+
+class NewMessageForm(forms.ModelForm):
+    class Meta:
+        model = Message
+        exclude = ['from_who', 'readed']

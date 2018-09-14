@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect
 from django.views import View
 from django.http import HttpResponse
-from .forms import RegisterForm, LoginForm, TicketForm, OfferForm
+from .forms import RegisterForm, LoginForm, TicketForm, OfferForm, NewMessageForm
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import authenticate, login, logout
-from .models import Ticket, Offer
+from .models import Ticket, Offer, Message
 
 class Index(View):
     def get(self, request):
@@ -141,3 +141,35 @@ class AssignCase(View):
             'ticket': ticket,
             'offers': offer,
         })
+
+
+class MyMessages(View):
+    def get(self, request):
+        messages = Message.objects.filter(to_who = request.user).order_by('creation_date')
+        return render(request, 'messages.html', {'messages':messages})
+
+
+class SendMessage(View):
+    def get(self, request, user_id):
+        form = NewMessageForm()
+        return render(request, 'newMessage.html', {'form':form})
+
+    def post(self, request, user_id):
+        form = NewMessageForm(request.POST)
+        if form.is_valid():
+            Message.objects.create(
+                content = form.cleaned_data['content'],
+                to_who = form.cleaned_data['to_who'],
+                from_who = User.objects.get(id = user_id)
+            )
+            messages = Message.objects.all()
+            return render(request, 'messages.html', {'messages': messages})
+        return HttpResponse("error")
+
+
+class ReadMessage(View):
+    def get(self, request, message_id):
+        message = Message.objects.get(id = message_id)
+        message.readed = True
+        message.save()
+        return render(request, 'readMessage.html', {'message':message})
