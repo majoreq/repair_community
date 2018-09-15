@@ -4,15 +4,64 @@
 <title>Ticket status</title>
 {% endblock %}
 {% block content %}
-
+{% load auth_extras %}
 <h1>Ticket status</h1>
 <p>{{ticket.creation_date}} {{ticket.author}}</p>
 <p>Device: {{ticket.device}}</p>
 <p>Description: {{ticket.description}}</p>
 <p>Ticket status: {{ticket.get_status_display}}</p>
-{% if ticket.status != '00' %}
-    <p>Assigned to: {{ticket.assigned_to.username}}</p>
-{% else %}
+{% if ticket.status == '01' %}
+
+    {% if request.user|has_group:"client" %}
+
+    <form method="POST">
+        {% csrf_token %}
+        {{shippingform}}
+        <input type="submit" value="submit">
+    </form>
+
+    {% endif %}
+
+{% elif ticket.status == '06' %}
+
+    {% if request.user|has_group:"technican" %}
+    <form method="POST">
+        {% csrf_token %}
+        {{shippingform}}
+        <input type="submit" value="submit">
+    </form>
+    {% endif %}
+
+{% elif ticket.status == '07' %}
+
+    {% if request.user|has_group:"client" %}
+    <form method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="recived" value="true">
+        <input type="submit" value="recived">
+    </form>
+    {% endif %}
+{% endif %}
+
+{% if ticket.status != '00' and ticket.status != '07' and ticket.status != '01' %}
+
+    {% if request.user|has_group:"technican" %}
+
+    <form method="POST">
+        {% csrf_token %}
+        {{form}}
+        <input type="submit" value="change">
+    </form>
+
+    {% endif %}
+{% endif %}
+<p>Shipping note from client: {{ticket.shipping_note}}</p>
+<p>Shipping note from technican: {{ticket.shipping_note2}}</p>
+<p>Assigned to: {{ticket.assigned_to.username}}</p>
+
+
+{% if ticket.status == '00' %}
+
     {% for offer in offers %}
 
         <table border="1">
@@ -24,8 +73,12 @@
                 <td colspan="2">{{offer.message}}</td>
             </tr>
             <tr>
+                {% if request.user|has_group:"client" %}
                 <td>price: {{offer.price}}</td>
                 <td><a href="{% url 'assign' ticket.id offer.id %}">accept</a> </td>
+                {% elif request.user|has_group:"technican" %}
+                <td colspan="2">price: {{offer.price}}</td>
+                {% endif %}
             </tr>
         </table>
     <br>

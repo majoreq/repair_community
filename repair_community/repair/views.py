@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views import View
 from django.http import HttpResponse
-from .forms import RegisterForm, LoginForm, TicketForm, OfferForm, NewMessageForm
+from .forms import RegisterForm, LoginForm, TicketForm, OfferForm, NewMessageForm, StatusForm, ShippingForm
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import authenticate, login, logout
 from .models import Ticket, Offer, Message
@@ -123,7 +123,6 @@ class MakeOffer(View):
     def post(self, request, ticket_id):
         ticket = Ticket.objects.get(id=ticket_id)
         form = OfferForm(request.POST)
-        print(request.POST)
         user = User.objects.get(id = request.user.id)
         if form.is_valid():
             Offer.objects.create(
@@ -140,10 +139,50 @@ class TicketStatus(View):
     def get(self, request, ticket_id):
         ticket = Ticket.objects.get(id=ticket_id)
         offers = Offer.objects.filter(ticket=ticket)
+        shippingform = ShippingForm()
+        form = StatusForm
         return render(request, 'ticket_status.html', {
             'ticket':ticket,
             'offers':offers,
+            'form':form,
+            'shippingform':shippingform
         })
+
+
+    def post(self, request, ticket_id):
+        ticket = Ticket.objects.get(id=ticket_id)
+        offers = Offer.objects.filter(ticket=ticket)
+        if request.user.groups.filter(name='technican').exists():
+            form = StatusForm(request.POST)
+            if form.is_valid():
+                ticket.status = form.cleaned_data['status']
+            shippingform = ShippingForm(request.POST)
+            if shippingform.is_valid():
+                ticket.shipping_note2 = shippingform.cleaned_data['shipping_note']
+                ticket.status='07'
+            ticket.save()
+            return render(request, 'ticket_status.html', {
+                'ticket': ticket,
+                'offers': offers,
+                'form': form,
+                'shippingform': shippingform,
+            })
+
+        if request.user.groups.filter(name='client').exists():
+            shippingform = ShippingForm(request.POST)
+            if shippingform.is_valid():
+                ticket.status = '02'
+                ticket.shipping_note = shippingform.cleaned_data['shipping_note']
+            if request.POST['recived']:
+                ticket.status = '08'
+            ticket.save()
+
+            return render(request, 'ticket_status.html', {
+                'ticket': ticket,
+                'offers': offers,
+                'shippingform': shippingform,
+            })
+        return HttpResponse("nie działa")
 
 
 class AssignCase(View):
@@ -199,4 +238,14 @@ class SendDM(View):
         form = NewMessageForm(initial={'to_who':user_id})
         return render(request, 'newMessage.html', {'form': form})
 
-
+    def post(self, request, user_id):
+        form = NewMessageForm(request.POST)
+        if form.is_valid():
+            Message.objects.create(
+                content = form.cleaned_data['content'],
+                to_who = form.cleaned_data['to_who'],
+                from_who = User.objects.get(id = request.user.id)
+            )
+            messages = Message.objects.filter(to_who = request.user).order_by('creation_date')
+            return render(request, 'messages.html', {'messages': messages})
+        return HttpResponse("error")

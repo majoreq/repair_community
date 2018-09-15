@@ -7,6 +7,12 @@ GROUP_CHOICES = (
     ('client', 'Client'),
 )
 
+TECHNIC_STATUSES = (
+    ('04', 'under repair'),
+    ('05', 'under testing'),
+    ('06', 'repair complete'),
+)
+
 class RegisterForm(forms.Form):
     first_name = forms.CharField(max_length=30, label="first name")
     last_name = forms.CharField(max_length=150, label="last name")
@@ -36,3 +42,11 @@ class NewMessageForm(forms.ModelForm):
     class Meta:
         model = Message
         exclude = ['from_who', 'readed']
+
+
+class StatusForm(forms.Form):
+    status = forms.ChoiceField(choices=TECHNIC_STATUSES)
+
+
+class ShippingForm(forms.Form):
+    shipping_note = forms.CharField(max_length=64)

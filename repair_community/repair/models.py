@@ -22,6 +22,8 @@ class Ticket(models.Model):
     author = models.ForeignKey(User, related_name="ticket_author", verbose_name="author", on_delete=models.SET_NULL, null=True)
     status = models.CharField(max_length=2, choices=STATUSES, default='00')
     grade = models.DecimalField(max_digits=2, decimal_places=1, verbose_name='grade', null=True)
+    shipping_note = models.CharField(max_length=64, verbose_name="shipping note from client", null=True)
+    shipping_note2 = models.CharField(max_length=64, verbose_name="shipping note from technican", null=True)
 
 
 class Offer(models.Model):
