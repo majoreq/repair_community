@@ -26,11 +26,11 @@
     <td>{{ ticket.author }}</td>
 </tr>
 <tr>
-    {% if request.user|has_group:"technican" %}
+    {% if request.user|has_group:"client" or ticket.assigned_to %}
+    <td colspan="2">{{ ticket.description }}</td>
+    {% elif request.user|has_group:"technican" %}
     <td>{{ ticket.description }}</td>
     <td><a href="{% url 'make-offer' ticket.id %}">Offer</a> </td>
-    {% elif request.user|has_group:"client" %}
-    <td colspan="2">{{ ticket.description }}</td>
     {% endif %}
 </tr>
 

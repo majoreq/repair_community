@@ -102,6 +102,15 @@ class MyTickets(View):
         })
 
 
+class MyRepairs(View):
+    def get(self, request):
+        user = request.user
+        tickets = Ticket.objects.filter(assigned_to=user)
+        return render(request, 'free_tickets.html', {
+            'tickets':tickets
+        })
+
+
 class MakeOffer(View):
     def get(self, request, ticket_id):
         ticket = Ticket.objects.get(id = ticket_id)
@@ -114,6 +123,7 @@ class MakeOffer(View):
     def post(self, request, ticket_id):
         ticket = Ticket.objects.get(id=ticket_id)
         form = OfferForm(request.POST)
+        print(request.POST)
         user = User.objects.get(id = request.user.id)
         if form.is_valid():
             Offer.objects.create(
@@ -122,7 +132,7 @@ class MakeOffer(View):
                 ticket = ticket,
                 message = form.cleaned_data['message']
             )
-            redirect('free-tickets')
+            return redirect('free-tickets')
         return HttpResponse("coś nie śmiga")
 
 
@@ -130,7 +140,6 @@ class TicketStatus(View):
     def get(self, request, ticket_id):
         ticket = Ticket.objects.get(id=ticket_id)
         offers = Offer.objects.filter(ticket=ticket)
-        print(ticket.assigned_to)
         return render(request, 'ticket_status.html', {
             'ticket':ticket,
             'offers':offers,
@@ -147,7 +156,7 @@ class AssignCase(View):
         offer.save()
         ticket.save()
 
-        return render(request, 'ticket_in_progres.html', {
+        return render(request, 'ticket_status.html', {
             'ticket': ticket,
             'offers': offer,
         })
@@ -172,7 +181,7 @@ class SendMessage(View):
                 to_who = form.cleaned_data['to_who'],
                 from_who = User.objects.get(id = request.user.id)
             )
-            messages = Message.objects.all()
+            messages = Message.objects.filter(to_who = request.user).order_by('creation_date')
             return render(request, 'messages.html', {'messages': messages})
         return HttpResponse("error")
 

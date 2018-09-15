@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from repair.views import Index, Register, Login, logoff, NewTicket, FreeTickets, MakeOffer, TicketStatus, AssignCase, MyMessages, SendMessage, ReadMessage, SendDM, MyTickets
+from repair.views import Index, Register, Login, logoff, NewTicket, FreeTickets, MakeOffer, TicketStatus, AssignCase, MyMessages, SendMessage, ReadMessage, SendDM, MyTickets, MyRepairs
 
 
 urlpatterns = [
@@ -33,5 +33,6 @@ urlpatterns = [
     path('send_message', SendMessage.as_view(), name='send-message'),
     path('message/<message_id>', ReadMessage.as_view(), name='read-message'),
     path('message/dm/<user_id>', SendDM.as_view(), name='send-dm'),
-    path('my_tickets', MyTickets.as_view(), name='my-tickets')
+    path('my_tickets', MyTickets.as_view(), name='my-tickets'),
+    path('my_repairs', MyRepairs.as_view(), name='my-repairs')
 ]

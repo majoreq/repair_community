@@ -14,7 +14,8 @@
                 {% if user.is_authenticated %}
                     {% if request.user|has_group:"technican" %}
                         <li class="nav-item"><a class="nav-link active" href="{% url 'index' %}">Home</a></li>
-                        <li class="nav-item"><a class="nav-link active" href="{% url 'free-tickets' %}">All ticket</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="{% url 'free-tickets' %}">All Ticket</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="{% url 'my-repairs' %}">My Repairs</a></li>
                         <li class="nav-item"><a class="nav-link active" href="{% url 'messages' %}">Messages</a></li>
                         <li class="nav-item"><a class="nav-link active" href="{% url 'logout' %}">Logout</a></li>
                     {% endif %}
