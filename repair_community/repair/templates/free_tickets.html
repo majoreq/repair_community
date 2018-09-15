@@ -4,15 +4,19 @@
 <title>Free tickets</title>
 {% endblock %}
 {% block content %}
-
+{% load auth_extras %}
 <table border="1" width="400">
 <tr>
     <th>DEVICE</th>
     <th>AUTHOR</th>
 </tr>
 <tr>
+    {% if request.user|has_group:"technican" %}
     <th>DESCRIPTION</th>
     <th>ACTION</th>
+    {% elif request.user|has_group:"client" %}
+    <th colspan="2">DESCRIPTION</th>
+    {% endif %}
 </tr>
 </table><br>
 <table border="1" width="400">
@@ -22,8 +26,12 @@
     <td>{{ ticket.author }}</td>
 </tr>
 <tr>
+    {% if request.user|has_group:"technican" %}
     <td>{{ ticket.description }}</td>
     <td><a href="{% url 'make-offer' ticket.id %}">Offer</a> </td>
+    {% elif request.user|has_group:"client" %}
+    <td colspan="2">{{ ticket.description }}</td>
+    {% endif %}
 </tr>
 
 

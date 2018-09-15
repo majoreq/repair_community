@@ -6,6 +6,8 @@ from django.contrib.auth.models import User, Group
 from django.contrib.auth import authenticate, login, logout
 from .models import Ticket, Offer, Message
 
+
+
 class Index(View):
     def get(self, request):
         return render(request, 'base.html')
@@ -29,12 +31,10 @@ class Register(View):
                     first_name=form.cleaned_data['first_name'],
                     last_name=form.cleaned_data['last_name'])
                 group = Group.objects.get(name=form.cleaned_data['group'])
-                # print(form.cleaned_data['group'])
-                # print("*")
-                # print(group)
                 user.save()
                 user.groups.add(group)
-                return HttpResponse("WORK")
+                login(request, user)
+                return redirect('index')
 
 
 class Login(View):
@@ -81,13 +81,22 @@ class NewTicket(View):
             description = form.cleaned_data['description'],
             author = user
             )
-            return HttpResponse("ticket created")
+            return redirect('index')
         return HttpResponse("form is not valid")
 
 
 class FreeTickets(View):
     def get(self, request):
         tickets = Ticket.objects.filter(assigned_to=None)
+        return render(request, 'free_tickets.html', {
+            'tickets':tickets
+        })
+
+
+class MyTickets(View):
+    def get(self, request):
+        user = request.user
+        tickets = Ticket.objects.filter(author=user)
         return render(request, 'free_tickets.html', {
             'tickets':tickets
         })
@@ -113,7 +122,7 @@ class MakeOffer(View):
                 ticket = ticket,
                 message = form.cleaned_data['message']
             )
-            return HttpResponse("wysłano ofertę")
+            redirect('free-tickets')
         return HttpResponse("coś nie śmiga")
 
 
@@ -126,6 +135,7 @@ class TicketStatus(View):
             'ticket':ticket,
             'offers':offers,
         })
+
 
 class AssignCase(View):
     def get(self, request, ticket_id, offer_id):
@@ -179,3 +189,5 @@ class SendDM(View):
     def get(self, request, user_id):
         form = NewMessageForm(initial={'to_who':user_id})
         return render(request, 'newMessage.html', {'form': form})
+
+

@@ -7,16 +7,29 @@
     {% endblock %}
 </head>
 <body>
+{% load auth_extras %}
 <div class="container">
         <div class="navbar navbar-dark bg-dark">
             <ul class="nav">
-                <li class="nav-item"><a class="nav-link active" href="{% url 'index' %}">Home</a></li>
-                <li class="nav-item"><a class="nav-link active" href="{% url 'new-ticket' %}">New Ticket</a></li>
-                <li class="nav-item"><a class="nav-link active" href="{% url 'free-tickets' %}">All ticket</a></li>
-                <li class="nav-item"><a class="nav-link active" href="{% url 'messages' %}">Messages</a></li>
-                <li class="nav-item"><a class="nav-link active" href="{% url 'login' %}">Login</a></li>
-                <li class="nav-item"><a class="nav-link active" href="{% url 'register' %}">Register</a></li>
-                <li class="nav-item"><a class="nav-link active" href="{% url 'logout' %}">Logout</a></li>
+                {% if user.is_authenticated %}
+                    {% if request.user|has_group:"technican" %}
+                        <li class="nav-item"><a class="nav-link active" href="{% url 'index' %}">Home</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="{% url 'free-tickets' %}">All ticket</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="{% url 'messages' %}">Messages</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="{% url 'logout' %}">Logout</a></li>
+                    {% endif %}
+                    {% if request.user|has_group:"client" %}
+                        <li class="nav-item"><a class="nav-link active" href="{% url 'index' %}">Home</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="{% url 'new-ticket' %}">New Ticket</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="{% url 'my-tickets' %}">My Tickets</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="{% url 'messages' %}">Messages</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="{% url 'logout' %}">Logout</a></li>
+                    {% endif %}
+                {% else %}
+                        <li class="nav-item"><a class="nav-link active" href="{% url 'login' %}">Login</a></li>
+                        <li class="nav-item"><a class="nav-link active" href="{% url 'register' %}">Register</a></li>
+                {% endif %}
+
             </ul>
         </div>
 <div class="jumbotron">
