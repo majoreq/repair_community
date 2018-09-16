@@ -17,7 +17,7 @@ class Register(View):
     def get(self, request):
         form = RegisterForm()
         return render(request, 'register.html', {
-            'form':form
+            'form': form
         })
 
     def post(self, request):
@@ -41,7 +41,7 @@ class Login(View):
     def get(self, request):
         form = LoginForm()
         return render(request, 'login.html', {
-            'form':form
+            'form': form
         })
 
     def post(self, request):
@@ -54,10 +54,9 @@ class Login(View):
             else:
                 error = "Wrong username or password"
                 return render(request, 'login.html', {
-                    'form': form, 'error':error
+                    'form': form, 'error': error
                 })
         return HttpResponse("Not working")
-
 
 
 def logoff(request):
@@ -68,18 +67,18 @@ def logoff(request):
 class NewTicket(View):
     def get(self, request):
         form = TicketForm()
-        return render(request, 'new_ticket.html',{
-            'form':form
+        return render(request, 'new_ticket.html', {
+            'form': form
         })
 
     def post(self, request):
         form = TicketForm(request.POST)
-        user = User.objects.get(id = request.user.id)
+        user = User.objects.get(id=request.user.id)
         if form.is_valid():
             Ticket.objects.create(
-            device = form.cleaned_data['device'],
-            description = form.cleaned_data['description'],
-            author = user
+                device=form.cleaned_data['device'],
+                description=form.cleaned_data['description'],
+                author=user
             )
             return redirect('index')
         return HttpResponse("form is not valid")
@@ -89,7 +88,7 @@ class FreeTickets(View):
     def get(self, request):
         tickets = Ticket.objects.filter(assigned_to=None)
         return render(request, 'free_tickets.html', {
-            'tickets':tickets
+            'tickets': tickets
         })
 
 
@@ -98,7 +97,7 @@ class MyTickets(View):
         user = request.user
         tickets = Ticket.objects.filter(author=user)
         return render(request, 'free_tickets.html', {
-            'tickets':tickets
+            'tickets': tickets
         })
 
 
@@ -107,29 +106,29 @@ class MyRepairs(View):
         user = request.user
         tickets = Ticket.objects.filter(assigned_to=user)
         return render(request, 'free_tickets.html', {
-            'tickets':tickets
+            'tickets': tickets
         })
 
 
 class MakeOffer(View):
     def get(self, request, ticket_id):
-        ticket = Ticket.objects.get(id = ticket_id)
+        ticket = Ticket.objects.get(id=ticket_id)
         form = OfferForm()
         return render(request, 'new_offer.html', {
-            'form':form,
-            'ticket':ticket
+            'form': form,
+            'ticket': ticket
         })
 
     def post(self, request, ticket_id):
         ticket = Ticket.objects.get(id=ticket_id)
         form = OfferForm(request.POST)
-        user = User.objects.get(id = request.user.id)
+        user = User.objects.get(id=request.user.id)
         if form.is_valid():
             Offer.objects.create(
-                author = user,
-                price = form.cleaned_data['price'],
-                ticket = ticket,
-                message = form.cleaned_data['message']
+                author=user,
+                price=form.cleaned_data['price'],
+                ticket=ticket,
+                message=form.cleaned_data['message']
             )
             return redirect('free-tickets')
         return HttpResponse("coś nie śmiga")
@@ -142,12 +141,11 @@ class TicketStatus(View):
         shippingform = ShippingForm()
         form = StatusForm
         return render(request, 'ticket_status.html', {
-            'ticket':ticket,
-            'offers':offers,
-            'form':form,
-            'shippingform':shippingform
+            'ticket': ticket,
+            'offers': offers,
+            'form': form,
+            'shippingform': shippingform
         })
-
 
     def post(self, request, ticket_id):
         ticket = Ticket.objects.get(id=ticket_id)
@@ -159,7 +157,7 @@ class TicketStatus(View):
             shippingform = ShippingForm(request.POST)
             if shippingform.is_valid():
                 ticket.shipping_note2 = shippingform.cleaned_data['shipping_note']
-                ticket.status='07'
+                ticket.status = '07'
             ticket.save()
             return render(request, 'ticket_status.html', {
                 'ticket': ticket,
@@ -173,8 +171,11 @@ class TicketStatus(View):
             if shippingform.is_valid():
                 ticket.status = '02'
                 ticket.shipping_note = shippingform.cleaned_data['shipping_note']
-            if request.POST['recived']:
-                ticket.status = '08'
+            try:
+                if request.POST['recived']:
+                    ticket.status = '08'
+            except:
+                pass
             ticket.save()
 
             return render(request, 'ticket_status.html', {
@@ -194,58 +195,69 @@ class AssignCase(View):
         offer.ticket = ticket
         offer.save()
         ticket.save()
+        return redirect('my-tickets')
 
-        return render(request, 'ticket_status.html', {
-            'ticket': ticket,
-            'offers': offer,
-        })
 
+    def post(self, request, ticket_id, offer_id):
+        return redirect('my-tickets')
 
 class MyMessages(View):
     def get(self, request):
-        messages = Message.objects.filter(to_who = request.user).order_by('creation_date')
-        return render(request, 'messages.html', {'messages':messages})
+        messages = Message.objects.filter(to_who=request.user).order_by('creation_date')
+        return render(request, 'messages.html', {
+            'messages': messages
+        })
 
 
 class SendMessage(View):
     def get(self, request):
         form = NewMessageForm()
-        return render(request, 'newMessage.html', {'form':form})
+        return render(request, 'newMessage.html', {
+            'form': form
+        })
 
     def post(self, request):
         form = NewMessageForm(request.POST)
         if form.is_valid():
             Message.objects.create(
-                content = form.cleaned_data['content'],
-                to_who = form.cleaned_data['to_who'],
-                from_who = User.objects.get(id = request.user.id)
+                content=form.cleaned_data['content'],
+                to_who=form.cleaned_data['to_who'],
+                from_who=User.objects.get(id=request.user.id)
             )
-            messages = Message.objects.filter(to_who = request.user).order_by('creation_date')
-            return render(request, 'messages.html', {'messages': messages})
+            messages = Message.objects.filter(to_who=request.user).order_by('creation_date')
+            return render(request, 'messages.html', {
+                'messages': messages
+            })
         return HttpResponse("error")
 
 
 class ReadMessage(View):
     def get(self, request, message_id):
-        message = Message.objects.get(id = message_id)
+        message = Message.objects.get(id=message_id)
         message.readed = True
         message.save()
-        return render(request, 'readMessage.html', {'message':message})
+        return render(request, 'readMessage.html', {
+            'message': message
+        })
 
 
 class SendDM(View):
     def get(self, request, user_id):
-        form = NewMessageForm(initial={'to_who':user_id})
-        return render(request, 'newMessage.html', {'form': form})
+        form = NewMessageForm(initial={'to_who': user_id})
+        return render(request, 'newMessage.html', {
+            'form': form
+        })
 
     def post(self, request, user_id):
         form = NewMessageForm(request.POST)
         if form.is_valid():
             Message.objects.create(
-                content = form.cleaned_data['content'],
-                to_who = form.cleaned_data['to_who'],
-                from_who = User.objects.get(id = request.user.id)
+                content=form.cleaned_data['content'],
+                to_who=form.cleaned_data['to_who'],
+                from_who=User.objects.get(id=request.user.id)
             )
-            messages = Message.objects.filter(to_who = request.user).order_by('creation_date')
-            return render(request, 'messages.html', {'messages': messages})
+            messages = Message.objects.filter(to_who=request.user).order_by('creation_date')
+            return render(request, 'messages.html', {
+                'messages': messages
+            })
         return HttpResponse("error")
